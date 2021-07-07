@@ -14,6 +14,7 @@ import java.util.Date;
 @Entity
 @Table(name = "ad_plan")
 public class AdPlan {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",nullable = false)
     private Long id;
