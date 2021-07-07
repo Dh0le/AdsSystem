@@ -8,5 +8,4 @@ public interface IUserService {
 
     CreateUserResponse createUser(CreateUserRequest request) throws AdException;
 
-
 }
