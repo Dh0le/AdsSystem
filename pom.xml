@@ -12,6 +12,7 @@
         <module>ad-gateway</module>
         <module>personal-ad-service</module>
         <module>ad-sponsor</module>
+        <module>ad-search</module>
     </modules>
     <packaging>pom</packaging>
     <name>personal-ad-spring-cloud</name>
