@@ -2,6 +2,7 @@ package com.personal.ad.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.personal.ad.annotation.IgnoreResponseAdvice;
+import com.personal.ad.client.SponsorClient;
 import com.personal.ad.client.vo.AdPlan;
 import com.personal.ad.client.vo.AdPlanGetRequest;
 import com.personal.ad.vo.CommonResponse;
@@ -18,22 +19,19 @@ import java.util.List;
 @RestController
 public class SearchController {
 
-    private RestTemplate restTemplate;
+    private SponsorClient client;
 
     @Autowired
-    public SearchController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public SearchController(SponsorClient client) {
+        this.client = client;
     }
 
-    @SuppressWarnings("all")
     @IgnoreResponseAdvice
-    @PostMapping("/getAdPlansByRibbon")
-    public CommonResponse<List<AdPlan>> getAdPlansByRibbon(
+    @PostMapping("/getAdPlans")
+    public CommonResponse<List<AdPlan>> getAdPlans(
             @RequestBody AdPlanGetRequest request
-            ){
-        log.info("ad-search:getAdPlanByRibbon->{}", JSON.toJSONString(request));
-        return restTemplate.postForEntity(
-                "http://eureka-client-ad-sponsor/ad-sponsor/get/adPlan",request,CommonResponse.class
-        ).getBody();
+    ){
+        log.info("ad-search:getAdPlans->{}",JSON.toJSONString(request));
+        return client.getAdPlans(request);
     }
 }
