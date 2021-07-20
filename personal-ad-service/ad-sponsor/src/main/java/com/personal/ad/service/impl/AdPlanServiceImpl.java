@@ -79,7 +79,7 @@ public class AdPlanServiceImpl  implements IAdPlanService {
             plan.setStartDate(CommonUtils.parseStringDate(request.getStartDate()));
         }
         if(request.getEndDate() != null){
-            plan.setEndTime(CommonUtils.parseStringDate(request.getEndDate()));
+            plan.setEndDate(CommonUtils.parseStringDate(request.getEndDate()));
         }
 
         plan.setUpdateTime(new Date());
