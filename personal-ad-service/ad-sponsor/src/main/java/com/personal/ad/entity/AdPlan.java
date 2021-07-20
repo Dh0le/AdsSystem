@@ -37,7 +37,7 @@ public class AdPlan {
 
     @Basic
     @Column(name = "end_date",nullable = false)
-    private Date endTime;
+    private Date endDate;
 
     @Basic
     @Column(name = "create_time",nullable = false)
@@ -52,7 +52,7 @@ public class AdPlan {
         this.planName = planName;
         this.planStatus = CommonStatus.VALID.getStatus();
         this.startDate = startDate;
-        this.endTime = endTime;
+        this.endDate = endTime;
         this.createTime = new Date();
         this.updateTime = this.createTime;
     }
