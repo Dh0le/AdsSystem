@@ -1,8 +1,8 @@
 package com.personal.ad.mysql.listener;
 
-import com.personal.ad.mysql.dto.BInLogRowData;
+import com.personal.ad.mysql.dto.BinLogRowData;
 
 public interface Ilistener {
     void register();
-    void onEvent(BInLogRowData eventData);
+    void onEvent(BinLogRowData eventData);
 }
