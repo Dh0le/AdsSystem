@@ -22,7 +22,7 @@ import java.util.Map;
 public class IncrementListener implements Ilistener{
 
     private final AggregationListener aggregationListener;
-    @Resource(name = "")
+    @Resource(name = "indexSender")
     private ISender sender;
 
     @Autowired
