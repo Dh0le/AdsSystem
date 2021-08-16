@@ -4,8 +4,9 @@ import com.personal.ad.index.IndexAware;
 import com.personal.ad.index.adplan.AdPlanObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -15,6 +16,31 @@ public class AdUnitIndex implements IndexAware<Long , AdUnitObject> {
 
     static{
         objectMap = new ConcurrentHashMap<>();
+    }
+    public Set<Long> match(Integer positionType){
+        Set<Long> adUnitIds = new HashSet<>();
+        objectMap.forEach((k,v)->{
+            if(AdUnitObject.isAdSlotTypeOK(positionType,v.getPositionType())){
+                adUnitIds.add(k);
+            }
+        });
+        return adUnitIds;
+    }
+
+    public List<AdUnitObject> fetch(Collection<Long> adUnitIds){
+        if(CollectionUtils.isEmpty(adUnitIds)){
+            return Collections.EMPTY_LIST;
+        }
+        List<AdUnitObject> res = new ArrayList<>();
+        adUnitIds.forEach(u->{
+            AdUnitObject object = get(u);
+            if(object == null){
+                log.error("AdUnitObject not found");
+                return;
+            }
+            res.add(object);
+        });
+        return res;
     }
     @Override
     public AdUnitObject get(Long key) {

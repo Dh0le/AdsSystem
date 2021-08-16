@@ -32,6 +32,37 @@ public class AdUnitObject {
         if(newObject.getAdPlanObject() != null){
             this.adPlanObject = newObject.getAdPlanObject();
         }
-
     }
+    private static boolean isOpenScreen(int positionType){
+        return (positionType & AdUnitConstants.POSITION_TYPE.openScreen) > 0;
+    }
+    private static boolean isPreMovie(int positionType){
+        return (positionType & AdUnitConstants.POSITION_TYPE.preMovie) > 0;
+    }
+    private static boolean isInMovie(int positionType){
+        return (positionType & AdUnitConstants.POSITION_TYPE.inMovie) > 0;
+    }
+    private static boolean isPostMovie(int positionType){
+        return (positionType & AdUnitConstants.POSITION_TYPE.postMovie) > 0;
+    }
+    private static boolean isPauseMovie(int positionType){
+        return (positionType & AdUnitConstants.POSITION_TYPE.pauseMovie) > 0;
+    }
+    public static boolean isAdSlotTypeOK(int adSlotType, int positionType){
+        switch (adSlotType) {
+            case AdUnitConstants.POSITION_TYPE.openScreen:
+                return isOpenScreen(positionType);
+            case AdUnitConstants.POSITION_TYPE.preMovie:
+                return isPreMovie(positionType);
+            case AdUnitConstants.POSITION_TYPE.inMovie:
+                return isInMovie(positionType);
+            case AdUnitConstants.POSITION_TYPE.pauseMovie:
+                return isPauseMovie(positionType);
+            case AdUnitConstants.POSITION_TYPE.postMovie:
+                return isPostMovie(positionType);
+            default:
+                return false;
+        }
+    }
+
 }
