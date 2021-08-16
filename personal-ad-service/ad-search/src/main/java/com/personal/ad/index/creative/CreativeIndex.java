@@ -2,8 +2,12 @@ package com.personal.ad.index.creative;
 
 import com.personal.ad.index.IndexAware;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +18,19 @@ public class CreativeIndex implements IndexAware<Long,CreativeObject> {
     private static Map<Long,CreativeObject> objectMap;
     static{
         objectMap = new ConcurrentHashMap<>();
+    }
+    public List<CreativeObject> fetch(List<Long> adIds){
+        if(CollectionUtils.isEmpty(adIds))return Collections.emptyList();
+        List<CreativeObject> result = new ArrayList<>();
+        adIds.forEach(u->{
+            CreativeObject object = get(u);
+            if(object == null){
+                log.error("Creative object not found:{}",u);
+                return;
+            }
+            result.add(object);
+        });
+        return result;
     }
     @Override
     public CreativeObject get(Long key) {

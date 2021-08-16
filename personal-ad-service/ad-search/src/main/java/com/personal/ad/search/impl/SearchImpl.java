@@ -53,6 +53,7 @@ public class SearchImpl implements ISearch {
                 targetUnitIdSet = getOrRelation(adUnitIdSet,keywordFeature,districtFeature,itFeature);
             }
         }
+
         return null;
     }
     private void filterKeywordFeature(Collection<Long> adUnitIds, KeywordFeature feature){
