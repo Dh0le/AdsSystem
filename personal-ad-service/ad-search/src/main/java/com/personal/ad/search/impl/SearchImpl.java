@@ -1,8 +1,14 @@
 package com.personal.ad.search.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
+import com.personal.ad.index.CommonStatus;
 import com.personal.ad.index.DataTable;
 import com.personal.ad.index.adunit.AdUnitIndex;
+import com.personal.ad.index.adunit.AdUnitObject;
+import com.personal.ad.index.creative.CreativeIndex;
+import com.personal.ad.index.creative.CreativeObject;
+import com.personal.ad.index.creativeunit.CreativeUnitIndex;
 import com.personal.ad.index.district.UnitDistrictIndex;
 import com.personal.ad.index.interest.UnitItIndex;
 import com.personal.ad.index.keyword.UnitKeywordIndex;
@@ -14,6 +20,8 @@ import com.personal.ad.search.vo.feature.FeatureRelation;
 import com.personal.ad.search.vo.feature.ITFeature;
 import com.personal.ad.search.vo.feature.KeywordFeature;
 import com.personal.ad.search.vo.media.AdSlot;
+import io.micrometer.core.instrument.search.Search;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.aop.framework.AdvisedSupportListener;
@@ -52,9 +60,19 @@ public class SearchImpl implements ISearch {
 
                 targetUnitIdSet = getOrRelation(adUnitIdSet,keywordFeature,districtFeature,itFeature);
             }
-        }
+            List<AdUnitObject> unitObjects = DataTable.of(AdUnitIndex.class).fetch(targetUnitIdSet);
+            filterAdUnitAndPlanStatus(unitObjects,CommonStatus.VALID);
+            List<Long> AdIds = DataTable.of(CreativeUnitIndex.class)
+                    .selectAds(unitObjects);
+            List<CreativeObject> creativeObjects = DataTable.of(CreativeIndex.class).fetch(AdIds);
 
-        return null;
+            //filter creative object according to adSlot
+            filterCreativeByAdSlot(creativeObjects,slot.getWidth(),slot.getHeight(),slot.getPositionType());
+            adSlot2Ads.put(slot.getAdSlotCode(),buildCreativeResponse(creativeObjects));
+        }
+        log.info("Fetch Ads:{}-{}", JSON.toJSONString(request),JSON.toJSONString(response));
+
+        return response;
     }
     private void filterKeywordFeature(Collection<Long> adUnitIds, KeywordFeature feature){
         if(CollectionUtils.isEmpty(adUnitIds))return;
@@ -90,8 +108,28 @@ public class SearchImpl implements ISearch {
         filterItFeature(itIdSet,itFeature);
 
         return new HashSet<>(CollectionUtils.union(keywordIdSet,CollectionUtils.union(keywordIdSet,districtIdSet)));
+    }
+    private void filterAdUnitAndPlanStatus(List<AdUnitObject> unitObjects, CommonStatus status){
+        if(CollectionUtils.isEmpty(unitObjects))return;
+        CollectionUtils.filter(
+                unitObjects,
+                object->object.getUnitStatus().equals(status.getStatus())
+                && object.getAdPlanObject().getPlanStatus().equals(status.getStatus())
+        );
+    }
 
-
-
+    private void filterCreativeByAdSlot(List<CreativeObject> creativeObjects,Integer width, Integer height,Integer type){
+        if(CollectionUtils.isEmpty(creativeObjects))return;
+        CollectionUtils.filter(creativeObjects,creative->
+                creative.getAuditStatus().equals(CommonStatus.VALID.getStatus())
+                &&creative.getWidth().equals(width)
+                &&creative.getHeight().equals(height)
+                &&creative.getType().equals(type)
+        );
+    }
+    private List<SearchResponse.Creative> buildCreativeResponse(List<CreativeObject> creatives){
+        if(CollectionUtils.isEmpty(creatives))return Collections.emptyList();
+        CreativeObject randomObject = creatives.get(Math.abs(new Random().nextInt()%creatives.size()));
+        return Collections.singletonList(SearchResponse.convert(randomObject));
     }
 }
