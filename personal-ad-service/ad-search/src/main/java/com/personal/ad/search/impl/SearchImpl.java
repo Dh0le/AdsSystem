@@ -2,6 +2,7 @@ package com.personal.ad.search.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.personal.ad.index.CommonStatus;
 import com.personal.ad.index.DataTable;
 import com.personal.ad.index.adunit.AdUnitIndex;
@@ -34,7 +35,12 @@ import java.util.*;
 @Slf4j
 @Service
 public class SearchImpl implements ISearch {
+    public SearchResponse fallback(SearchRequest request, Throwable e){
+        return null;
+    }
+
     @Override
+    @HystrixCommand(fallbackMethod = "fallback")
     public SearchResponse fetchAds(SearchRequest request) {
         List<AdSlot> adSlots = request.getRequestInfo().getAdSlots();
 
